@@ -119,14 +119,21 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
   };
 
   const handleDelete = async (item: DisplayMediaItem) => {
-    if (item.source === 'cloud') {
-      await deleteCloudMedia(item.id);
-    } else {
-      await deleteMedia(item.id);
-      loadLocalVideos();
+    const confirmed = typeof window !== 'undefined' && window.confirm('Delete this photo?');
+    if (!confirmed) return;
+    try {
+      if (item.source === 'cloud') {
+        await deleteCloudMedia(item.id);
+      } else {
+        await deleteMedia(item.id);
+        loadLocalVideos();
+      }
+      setLightboxItem(null);
+      onMediaAdded();
+    } catch (error) {
+      console.error('Failed to delete:', error);
+      if (typeof window !== 'undefined') window.alert('Failed to delete. Check console for details.');
     }
-    setLightboxItem(null);
-    onMediaAdded();
   };
 
   const currentIndex = lightboxItem ? items.findIndex((i) => i.id === lightboxItem.id) : -1;
@@ -137,44 +144,56 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
         {items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setLightboxItem(item)}
-            className="relative aspect-square rounded-[10px] overflow-hidden bg-stone-100 border border-divider"
-          >
-            {item.type === 'image' ? (
-              <img
-                src={item.thumbnail}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <>
+          <div key={item.id} className="relative aspect-square rounded-[10px] overflow-hidden bg-stone-100 border border-divider">
+            <button
+              type="button"
+              onClick={() => setLightboxItem(item)}
+              className="absolute inset-0 w-full h-full"
+            >
+              {item.type === 'image' ? (
                 <img
                   src={item.thumbnail}
                   alt=""
                   className="w-full h-full object-cover"
                 />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-                  <Play size={32} className="text-white drop-shadow" fill="white" />
-                </span>
-              </>
-            )}
+              ) : (
+                <>
+                  <img
+                    src={item.thumbnail}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <Play size={32} className="text-white drop-shadow" fill="white" />
+                  </span>
+                </>
+              )}
+            </button>
+            {/* Delete button — visible on each thumbnail */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(item);
+              }}
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80 active:scale-95 touch-manipulation z-10"
+              aria-label="Delete"
+            >
+              ✕
+            </button>
             {/* Uploader initial (cloud) or device-only badge (local video) */}
-            <span className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs font-bold flex items-center justify-center">
+            <span className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs font-bold flex items-center justify-center pointer-events-none">
               {item.source === 'cloud' && item.uploadedBy
                 ? item.uploadedBy[0].toUpperCase()
                 : '📱'}
             </span>
-          </button>
+          </div>
         ))}
         <label className="aspect-square rounded-[10px] border-2 border-dashed border-divider flex items-center justify-center cursor-pointer active:bg-stone-50 min-h-[80px]">
           <input
             ref={inputRef}
             type="file"
             accept="image/*,video/*"
-            capture="environment"
             multiple
             onChange={handleFileChange}
             disabled={loading}

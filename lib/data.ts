@@ -61,55 +61,55 @@ export const OVERVIEW_DAYS: OverviewDay[] = [
 
 // --- Cost summary ---
 export const COST_SUMMARY: CostRow[] = [
-  { label: 'Accommodation (38 nights)', amount: '~30,215' },
-  { label: 'Domestic Flights (3)', amount: '~5,700' },
-  { label: 'Car Rentals (3)', amount: '~6,200' },
-  { label: 'Attractions (Universal, TeamLab)', amount: '~1,942' },
-  { label: 'Estimated Total', amount: '~44,000', isTotal: true },
+  { label: 'Accommodation (38 nights)', amount: '₪~30,215' },
+  { label: 'Domestic Flights (3)', amount: '₪~5,700' },
+  { label: 'Car Rentals (3)', amount: '₪~6,200' },
+  { label: 'Attractions (Universal, TeamLab)', amount: '₪~1,942' },
+  { label: 'Estimated Total', amount: '₪~44,000', isTotal: true },
 ];
 
 export const COST_SUMMARY_NOTE = 'Excluding: international flights, food, trains, daily expenses';
 
 // --- Reservations ---
 export const RESERVATIONS_HOTELS: Reservation[] = [
-  { title: 'Hotel Century Southern Tower', details: [{ label: 'Location', value: 'Shinjuku, Tokyo' }, { label: 'Dates', value: 'Mar 7-11 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '4,004 NIS' }], price: '4,004 NIS' },
-  { title: 'Cross Hotel Kyoto', details: [{ label: 'Location', value: 'Nakagyo-ku, Kyoto' }, { label: 'Dates', value: 'Mar 11-15 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '2,080 NIS' }], price: '2,080 NIS' },
-  { title: 'Hotel Granvia Osaka (JR)', details: [{ label: 'Location', value: 'Osaka Station' }, { label: 'Dates', value: 'Mar 15-18 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '1,310 + 1,721 NIS' }], price: '1,310 + 1,721 NIS' },
-  { title: 'Takayama Hotel (Ascend Collection)', details: [{ label: 'Location', value: 'Takayama' }, { label: 'Dates', value: 'Mar 18-19 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '437 NIS' }], price: '437 NIS' },
-  { title: 'Onyado Nono Matsumoto Hot Spring', details: [{ label: 'Location', value: 'Matsumoto' }, { label: 'Dates', value: 'Mar 19-20 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '468 NIS' }], price: '468 NIS' },
-  { title: 'Nukumorino-yado Komanoyu', details: [{ label: 'Location', value: 'Fukushima-juku, Kiso Valley' }, { label: 'Dates', value: 'Mar 20-21 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '1,017 NIS' }], price: '1,017 NIS' },
-  { title: 'Enakyo Onsen Hotel Yuzuriha', details: [{ label: 'Location', value: 'Nakatsugawa' }, { label: 'Dates', value: 'Mar 21-22 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '707 NIS' }], price: '707 NIS' },
-  { title: 'Richmon Hotel Tenjin', details: [{ label: 'Location', value: 'Tenjin, Fukuoka' }, { label: 'Dates', value: 'Mar 22-25 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '1,417 NIS' }], price: '1,417 NIS' },
-  { title: 'Nihonryokan Utsuwa Beppu Kannawa', details: [{ label: 'Location', value: 'Beppu' }, { label: 'Dates', value: 'Mar 25-28 (3 nights)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '1,483 NIS' }], price: '1,483 NIS' },
-  { title: 'Sense of Wonder Glamping Resort', details: [{ label: 'Location', value: 'Yufudake, Yufu' }, { label: 'Dates', value: 'Mar 28-29 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '982 NIS' }], price: '982 NIS' },
-  { title: 'Solest Takachiho Hotel', details: [{ label: 'Location', value: 'Takachiho' }, { label: 'Dates', value: 'Mar 29-30 (1 night)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '642 NIS' }], price: '642 NIS' },
-  { title: 'Fairfield by Marriott Kumamoto Aso', details: [{ label: 'Location', value: 'Aso' }, { label: 'Dates', value: 'Mar 30 - Apr 3 (4 nights)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '2,548 NIS' }], price: '2,548 NIS' },
-  { title: 'Seven x Seven Ishigaki', details: [{ label: 'Location', value: 'Ishigaki, Okinawa' }, { label: 'Dates', value: 'Apr 3-7 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '4,280 NIS' }], price: '4,280 NIS' },
-  { title: 'Tokyu Hotel Resort', details: [{ label: 'Location', value: 'Miyakojima, Okinawa' }, { label: 'Dates', value: 'Apr 7-10 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '2,791 NIS' }], price: '2,791 NIS' },
-  { title: 'The Royal Park Canvas Ginza Corridor', details: [{ label: 'Location', value: 'Ginza, Tokyo' }, { label: 'Dates', value: 'Apr 10-14 (4 nights)' }, { label: 'Booked via', value: '—' }, { label: 'Cost', value: '4,328 NIS' }], price: '4,328 NIS' },
+  { title: 'Hotel Century Southern Tower', details: [{ label: 'Location', value: 'Shinjuku, Tokyo' }, { label: 'Dates', value: 'Mar 7-11 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪4,004' }], price: '₪4,004' },
+  { title: 'Cross Hotel Kyoto', details: [{ label: 'Location', value: 'Nakagyo-ku, Kyoto' }, { label: 'Dates', value: 'Mar 11-15 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪2,080' }], price: '₪2,080' },
+  { title: 'Hotel Granvia Osaka (JR)', details: [{ label: 'Location', value: 'Osaka Station' }, { label: 'Dates', value: 'Mar 15-18 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪1,310 + ₪1,721' }], price: '₪1,310 + ₪1,721' },
+  { title: 'Takayama Hotel (Ascend Collection)', details: [{ label: 'Location', value: 'Takayama' }, { label: 'Dates', value: 'Mar 18-19 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪437' }], price: '₪437' },
+  { title: 'Onyado Nono Matsumoto Hot Spring', details: [{ label: 'Location', value: 'Matsumoto' }, { label: 'Dates', value: 'Mar 19-20 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪468' }], price: '₪468' },
+  { title: 'Nukumorino-yado Komanoyu', details: [{ label: 'Location', value: 'Fukushima-juku, Kiso Valley' }, { label: 'Dates', value: 'Mar 20-21 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪1,017' }], price: '₪1,017' },
+  { title: 'Enakyo Onsen Hotel Yuzuriha', details: [{ label: 'Location', value: 'Nakatsugawa' }, { label: 'Dates', value: 'Mar 21-22 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪707' }], price: '₪707' },
+  { title: 'Richmon Hotel Tenjin', details: [{ label: 'Location', value: 'Tenjin, Fukuoka' }, { label: 'Dates', value: 'Mar 22-25 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪1,417' }], price: '₪1,417' },
+  { title: 'Nihonryokan Utsuwa Beppu Kannawa', details: [{ label: 'Location', value: 'Beppu' }, { label: 'Dates', value: 'Mar 25-28 (3 nights)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '₪1,483' }], price: '₪1,483' },
+  { title: 'Sense of Wonder Glamping Resort', details: [{ label: 'Location', value: 'Yufudake, Yufu' }, { label: 'Dates', value: 'Mar 28-29 (1 night)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪982' }], price: '₪982' },
+  { title: 'Solest Takachiho Hotel', details: [{ label: 'Location', value: 'Takachiho' }, { label: 'Dates', value: 'Mar 29-30 (1 night)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '₪642' }], price: '₪642' },
+  { title: 'Fairfield by Marriott Kumamoto Aso', details: [{ label: 'Location', value: 'Aso' }, { label: 'Dates', value: 'Mar 30 - Apr 3 (4 nights)' }, { label: 'Booked via', value: 'Booking.com (Elad)' }, { label: 'Cost', value: '₪2,548' }], price: '₪2,548' },
+  { title: 'Seven x Seven Ishigaki', details: [{ label: 'Location', value: 'Ishigaki, Okinawa' }, { label: 'Dates', value: 'Apr 3-7 (4 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪4,280' }], price: '₪4,280' },
+  { title: 'Tokyu Hotel Resort', details: [{ label: 'Location', value: 'Miyakojima, Okinawa' }, { label: 'Dates', value: 'Apr 7-10 (3 nights)' }, { label: 'Booked via', value: 'Agoda' }, { label: 'Cost', value: '₪2,791' }], price: '₪2,791' },
+  { title: 'The Royal Park Canvas Ginza Corridor', details: [{ label: 'Location', value: 'Ginza, Tokyo' }, { label: 'Dates', value: 'Apr 10-14 (4 nights)' }, { label: 'Booked via', value: '—' }, { label: 'Cost', value: '₪4,328' }], price: '₪4,328' },
 ];
 
 export const RESERVATIONS_DINING: Reservation[] = [
   { title: 'Gyopao Gyoza Roppongi', details: [{ label: 'Date', value: 'Tue, Mar 10 at 19:30' }, { label: 'Location', value: 'Roppongi, Tokyo' }, { label: 'Day', value: 'Day 4' }] },
-  { title: 'Takachiho Kagura Night Performance', details: [{ label: 'Date', value: 'Sun, Mar 29 at 20:00' }, { label: 'Location', value: 'Takachiho Shrine, Miyazaki' }, { label: 'Day', value: 'Day 23' }, { label: 'Cost', value: '~1,000 yen at the door' }], price: '~1,000 yen at the door' },
+  { title: 'Takachiho Kagura Night Performance', details: [{ label: 'Date', value: 'Sun, Mar 29 at 20:00' }, { label: 'Location', value: 'Takachiho Shrine, Miyazaki' }, { label: 'Day', value: 'Day 23' }, { label: 'Cost', value: '₪25 (~¥1,000 at the door)' }], price: '₪25 (~¥1,000 at the door)' },
 ];
 
 export const RESERVATIONS_FLIGHTS: Reservation[] = [
-  { title: 'Fukuoka → Ishigaki', details: [{ label: 'Date', value: 'Apr 3 · 12:20' }, { label: 'Airline', value: 'Peach (last minute)' }, { label: 'Cost', value: '1,068 NIS' }], price: '1,068 NIS' },
-  { title: 'Ishigaki → Miyakojima', details: [{ label: 'Date', value: 'Apr 7 · 8:30' }, { label: 'Airline', value: 'ANA' }, { label: 'Cost', value: '110 EUR (~430 NIS)' }], price: '110 EUR (~430 NIS)' },
-  { title: 'Miyakojima → Tokyo', details: [{ label: 'Date', value: 'Apr 10 · 14:35' }, { label: 'Airline', value: 'JAL (via trip.com)' }, { label: 'Cost', value: '$270.80 (~1,000 NIS)' }], price: '$270.80 (~1,000 NIS)' },
+  { title: 'Fukuoka → Ishigaki', details: [{ label: 'Date', value: 'Apr 3 · 12:20' }, { label: 'Airline', value: 'Peach (last minute)' }, { label: 'Cost', value: '₪1,068' }], price: '₪1,068' },
+  { title: 'Ishigaki → Miyakojima', details: [{ label: 'Date', value: 'Apr 7 · 8:30' }, { label: 'Airline', value: 'ANA' }, { label: 'Cost', value: '₪430 (€110)' }], price: '₪430 (€110)' },
+  { title: 'Miyakojima → Tokyo', details: [{ label: 'Date', value: 'Apr 10 · 14:35' }, { label: 'Airline', value: 'JAL (via trip.com)' }, { label: 'Cost', value: '₪1,000 ($270.80)' }], price: '₪1,000 ($270.80)' },
 ];
 
 export const RESERVATIONS_CARS: Reservation[] = [
-  { title: 'Central Japan (Nagoya pickup & return)', details: [{ label: 'Dates', value: 'Mar 18 → Mar 22' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '$365 (~1,350 NIS)' }], price: '$365 (~1,350 NIS)' },
-  { title: 'Kyushu (Fukuoka area)', details: [{ label: 'Dates', value: '~Mar 24 → Apr 3' }, { label: 'Company', value: 'Budget' }, { label: 'Cost', value: '~1,800 NIS' }], price: '~1,800 NIS' },
-  { title: 'Ishigaki', details: [{ label: 'Dates', value: 'Apr 3-7' }, { label: 'Company', value: 'Nissan Rent-a-Car' }, { label: 'Cost', value: '~720 NIS' }], price: '~720 NIS' },
-  { title: 'Miyakojima', details: [{ label: 'Dates', value: 'Apr 7-10' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '$261 (~965 NIS)' }], price: '$261 (~965 NIS)' },
+  { title: 'Central Japan (Nagoya pickup & return)', details: [{ label: 'Dates', value: 'Mar 18 → Mar 22' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '₪1,350 ($365)' }], price: '₪1,350 ($365)' },
+  { title: 'Kyushu (Fukuoka area)', details: [{ label: 'Dates', value: '~Mar 24 → Apr 3' }, { label: 'Company', value: 'Budget' }, { label: 'Cost', value: '₪~1,800' }], price: '₪~1,800' },
+  { title: 'Ishigaki', details: [{ label: 'Dates', value: 'Apr 3-7' }, { label: 'Company', value: 'Nissan Rent-a-Car' }, { label: 'Cost', value: '₪~720' }], price: '₪~720' },
+  { title: 'Miyakojima', details: [{ label: 'Dates', value: 'Apr 7-10' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '₪965 ($261)' }], price: '₪965 ($261)' },
 ];
 
 export const RESERVATIONS_ATTRACTIONS: Reservation[] = [
-  { title: 'Universal Studios Japan', details: [{ label: 'Date', value: 'Mar 16' }, { label: 'Booked via', value: 'Klook' }, { label: 'Cost', value: '1,721 NIS' }], price: '1,721 NIS' },
-  { title: 'TeamLab Planets', details: [{ label: 'Date', value: 'Apr 13 (reserved)' }, { label: 'Booked via', value: 'Official site' }, { label: 'Cost', value: '221 NIS' }], price: '221 NIS' },
+  { title: 'Universal Studios Japan', details: [{ label: 'Date', value: 'Mar 16' }, { label: 'Booked via', value: 'Klook' }, { label: 'Cost', value: '₪1,721' }], price: '₪1,721' },
+  { title: 'TeamLab Planets', details: [{ label: 'Date', value: 'Apr 13 (reserved)' }, { label: 'Booked via', value: 'Official site' }, { label: 'Cost', value: '₪221' }], price: '₪221' },
   { title: 'Takachiho Gorge Boat Tour', details: [{ label: 'Date', value: 'Mar 30' }, { label: 'Book on', value: 'Mar 16!' }, { label: 'Cost', value: '—' }] },
 ];
 

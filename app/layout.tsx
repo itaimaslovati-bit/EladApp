@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { IranPopup } from '@/components/IranPopup';
 import { SplashWrapper } from '@/components/SplashWrapper';
+import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Japan Trip - Tal & Elad',
@@ -38,16 +39,19 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Japan Trip" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <style dangerouslySetInnerHTML={{ __html: 'html,body{background:#FAFAF9!important;min-height:100vh}' }} />
         <link
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="font-sans antialiased bg-[#FAFAF9] text-[#1C1917]">
-        <SplashWrapper>
-          {children}
-        </SplashWrapper>
-        <IranPopup />
+        <RootErrorBoundary>
+          <SplashWrapper>
+            {children}
+          </SplashWrapper>
+          <IranPopup />
+        </RootErrorBoundary>
       </body>
     </html>
   );

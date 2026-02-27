@@ -205,7 +205,7 @@ export const TRIP_DAYS: TripDay[] = [
         title: 'Attractions',
         items: [
           { text: 'Full day at Universal Studios Japan', tip: 'From Hotel Granvia: walk to JR Osaka Station (hotel is inside the station!). Take JR Yumesaki Line direct to Universal City (~11 min, 180 yen). Gates open 8:30 or 9:00 — arrive 30 min early for popular rides. Download the USJ app for wait times.', mapsLink: H('Universal Studios Japan Osaka') },
-          { text: 'Tickets via Klook (1,721 NIS)' },
+          { text: 'Tickets via Klook (₪1,721)' },
         ],
       },
     ],
@@ -468,7 +468,7 @@ export const TRIP_DAYS: TripDay[] = [
       { title: 'Travel', items: [
         { text: 'Drive back towards Fukuoka / drop car', mapsLink: H('Fukuoka Airport Japan') },
         { text: 'Peach Airlines flight at 12:20 to Ishigaki', tip: 'Peach is a budget airline! Baggage is NOT included — pre-purchase checked bags online (cheaper than at airport). Arrive 1.5h before departure. Bring snacks, no free food onboard.', mapsLink: H('Ishigaki Airport Okinawa Japan') },
-        { text: 'Pick up rental car (Nissan, ~720 NIS)' },
+        { text: 'Pick up rental car (Nissan, ₪~720)' },
       ]},
       { title: 'Hotel', items: [{ text: 'Seven x Seven Ishigaki', mapsLink: H('Seven x Seven Ishigaki Japan') }] },
     ],
@@ -576,7 +576,7 @@ export const TRIP_DAYS: TripDay[] = [
     mapsLink: H('TeamLab Planets Tokyo Japan'),
     sections: [
       { title: 'Attractions', items: [
-        { text: 'TeamLab Planets (tickets reserved — 221 NIS via official site)', tip: 'You walk through water — wear shorts or clothes you can roll up above the knee. Lockers provided for shoes and bags. Allow 2-3 hours. Amazing for photos!', mapsLink: H('TeamLab Planets Tokyo Japan') },
+        { text: 'TeamLab Planets (tickets reserved — ₪221 via official site)', tip: 'You walk through water — wear shorts or clothes you can roll up above the knee. Lockers provided for shoes and bags. Allow 2-3 hours. Amazing for photos!', mapsLink: H('TeamLab Planets Tokyo Japan') },
         { text: 'Last full day — soak it all in!' },
       ]},
     ],

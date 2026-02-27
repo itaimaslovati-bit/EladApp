@@ -17,16 +17,22 @@ export function SplashWrapper({ children }: { children: React.ReactNode }) {
     if (!mounted || typeof window === 'undefined') return;
     const skip =
       process.env.NEXT_PUBLIC_SKIP_SPLASH === 'true' ||
-      window.location.search.includes('nosplash');
+      window.location.search.includes('nosplash') ||
+      sessionStorage.getItem('splashShown') === 'true';
     if (skip) setShowSplash(false);
   }, [mounted]);
+
+  function handleSplashComplete() {
+    if (typeof window !== 'undefined') sessionStorage.setItem('splashShown', 'true');
+    setShowSplash(false);
+  }
 
   if (!mounted) {
     return <div className="min-h-screen bg-[#FAFAF9]" />;
   }
 
   if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+    return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
   return (

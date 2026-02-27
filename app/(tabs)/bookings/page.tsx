@@ -32,7 +32,7 @@ function CostSummaryCard() {
   return (
     <div className="rounded-2xl bg-gradient-to-br from-stone-900 to-stone-700 text-white p-5 mb-6">
       <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3">
-        Cost Summary (NIS)
+        Cost Summary (₪)
       </h3>
       <div className="space-y-1.5">
         {COST_SUMMARY.map((row) => (
@@ -46,7 +46,7 @@ function CostSummaryCard() {
         ))}
       </div>
       <p className="text-xs text-stone-500 mt-3">{COST_SUMMARY_NOTE}</p>
-      <p className="text-accent-light text-sm font-semibold mt-2">~22,000 NIS per person</p>
+      <p className="text-accent-light text-sm font-semibold mt-2">₪~22,000 per person</p>
     </div>
   );
 }
@@ -96,7 +96,13 @@ function ReservationCard({
         {details.map((d) => (
           <div key={d.label} className="flex justify-between gap-2">
             <dt className="text-text-secondary">{d.label}</dt>
-            <dd className={`font-medium text-right ${d.label === 'Cost' ? 'text-accent' : ''}`}>
+            <dd className={`font-medium text-right flex items-center justify-end gap-1.5 ${d.label === 'Cost' ? 'text-accent' : ''}`}>
+              {d.label === 'Booked via' && d.value.includes('Agoda') && (
+                <img src="https://cdn6.agoda.net/images/agoda-logo.svg" alt="" className="h-4 w-auto object-contain" />
+              )}
+              {d.label === 'Booked via' && d.value.includes('Booking.com') && (
+                <img src="https://cf.bstatic.com/static/img/tfl/logo_booking/logo_booking_1x.png" alt="" className="h-4 w-auto object-contain" />
+              )}
               {d.value}
             </dd>
           </div>

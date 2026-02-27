@@ -1,7 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CHECKLIST_ITEMS_FLAT, TODO_ITEMS, PACKING_ITEMS_FLAT } from './data';
-import type { TripSyncData } from './cloudSyncTypes';
+import type {
+  TripSyncData,
+  UserPackingItem,
+  UserFoodItem,
+  UserToBookItem,
+  UserIdeaItem,
+  UserPhraseItem,
+} from './cloudSyncTypes';
 
 function syncLater(
   importSync: () => Promise<{
@@ -11,6 +18,11 @@ function syncLater(
     syncBookingLinks: (b: Record<string, string>) => Promise<void>;
     syncDayCaption: (d: number, caption: string) => Promise<void>;
     syncDayCaptions: (d: Record<number, string>) => Promise<void>;
+    syncUserPacking: (items: UserPackingItem[]) => Promise<void>;
+    syncUserFood: (items: UserFoodItem[]) => Promise<void>;
+    syncUserToBook: (items: UserToBookItem[]) => Promise<void>;
+    syncUserIdeas: (items: UserIdeaItem[]) => Promise<void>;
+    syncUserPhrases: (items: UserPhraseItem[]) => Promise<void>;
   }>,
   run: (m: Awaited<ReturnType<typeof importSync>>) => Promise<unknown>
 ) {
@@ -44,6 +56,21 @@ interface AppState {
   setCurrentDayBookmark: (day: number | null) => void;
   bookingLinks: Record<string, string>;
   setBookingLink: (reservationId: string, url: string) => void;
+  userPacking: UserPackingItem[];
+  addUserPacking: (item: Omit<UserPackingItem, 'id'>) => void;
+  removeUserPacking: (id: string) => void;
+  userFood: UserFoodItem[];
+  addUserFood: (item: Omit<UserFoodItem, 'id'>) => void;
+  removeUserFood: (id: string) => void;
+  userToBook: UserToBookItem[];
+  addUserToBook: (item: Omit<UserToBookItem, 'id'>) => void;
+  removeUserToBook: (id: string) => void;
+  userIdeas: UserIdeaItem[];
+  addUserIdea: (item: Omit<UserIdeaItem, 'id'>) => void;
+  removeUserIdea: (id: string) => void;
+  userPhrases: UserPhraseItem[];
+  addUserPhrase: (item: Omit<UserPhraseItem, 'id'>) => void;
+  removeUserPhrase: (id: string) => void;
   bookingsWalletView: boolean;
   setBookingsWalletView: (value: boolean) => void;
   daysViewMode: 'calendar' | 'list';
@@ -130,16 +157,97 @@ export const useStore = create<AppState>()(
       setCurrentDayBookmark: (day) => set({ currentDayBookmark: day }),
       bookingLinks: {},
       setBookingLink: (reservationId, url) => {
-        set((state) => ({
-          bookingLinks: url
+        set((state) => {
+          const next = url
             ? { ...state.bookingLinks, [reservationId]: url }
             : (() => {
-                const next = { ...state.bookingLinks };
-                delete next[reservationId];
-                return next;
-              })(),
-        }));
-        syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(get().bookingLinks));
+                const n = { ...state.bookingLinks };
+                delete n[reservationId];
+                return n;
+              })();
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(next));
+          return { bookingLinks: next };
+        });
+      },
+      userPacking: [],
+      addUserPacking: (item) => {
+        const newItem: UserPackingItem = { ...item, id: `p-${Date.now()}` };
+        set((state) => {
+          const next = [...(state.userPacking ?? []), newItem];
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserPacking(next));
+          return { userPacking: next };
+        });
+      },
+      removeUserPacking: (id) => {
+        set((state) => {
+          const next = (state.userPacking ?? []).filter((i) => i.id !== id);
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserPacking(next));
+          return { userPacking: next };
+        });
+      },
+      userFood: [],
+      addUserFood: (item) => {
+        const newItem: UserFoodItem = { ...item, id: `f-${Date.now()}` };
+        set((state) => {
+          const next = [...(state.userFood ?? []), newItem];
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserFood(next));
+          return { userFood: next };
+        });
+      },
+      removeUserFood: (id) => {
+        set((state) => {
+          const next = (state.userFood ?? []).filter((i) => i.id !== id);
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserFood(next));
+          return { userFood: next };
+        });
+      },
+      userToBook: [],
+      addUserToBook: (item) => {
+        const newItem: UserToBookItem = { ...item, id: `t-${Date.now()}` };
+        set((state) => {
+          const next = [...(state.userToBook ?? []), newItem];
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserToBook(next));
+          return { userToBook: next };
+        });
+      },
+      removeUserToBook: (id) => {
+        set((state) => {
+          const next = (state.userToBook ?? []).filter((i) => i.id !== id);
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserToBook(next));
+          return { userToBook: next };
+        });
+      },
+      userIdeas: [],
+      addUserIdea: (item) => {
+        const newItem: UserIdeaItem = { ...item, id: `i-${Date.now()}` };
+        set((state) => {
+          const next = [...(state.userIdeas ?? []), newItem];
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserIdeas(next));
+          return { userIdeas: next };
+        });
+      },
+      removeUserIdea: (id) => {
+        set((state) => {
+          const next = (state.userIdeas ?? []).filter((i) => i.id !== id);
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserIdeas(next));
+          return { userIdeas: next };
+        });
+      },
+      userPhrases: [],
+      addUserPhrase: (item) => {
+        const newItem: UserPhraseItem = { ...item, id: `ph-${Date.now()}` };
+        set((state) => {
+          const next = [...(state.userPhrases ?? []), newItem];
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserPhrases(next));
+          return { userPhrases: next };
+        });
+      },
+      removeUserPhrase: (id) => {
+        set((state) => {
+          const next = (state.userPhrases ?? []).filter((i) => i.id !== id);
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncUserPhrases(next));
+          return { userPhrases: next };
+        });
       },
       bookingsWalletView: false,
       setBookingsWalletView: (value) => set({ bookingsWalletView: value }),
@@ -174,6 +282,11 @@ export const useStore = create<AppState>()(
               packingChecked: { ...defaultPacking, ...numKeys(data?.packingChecked ?? {}) },
               bookingLinks: data?.bookingLinks ?? {},
               dayCaptions: numKeys(data?.dayCaptions ?? {}),
+              userPacking: data?.userPacking ?? [],
+              userFood: data?.userFood ?? [],
+              userToBook: data?.userToBook ?? [],
+              userIdeas: data?.userIdeas ?? [],
+              userPhrases: data?.userPhrases ?? [],
             });
           } catch (e) {
             console.warn('[Store] applyRemoteData failed:', e);
@@ -189,6 +302,11 @@ export const useStore = create<AppState>()(
         iranDismissed: s.iranDismissed,
         currentDayBookmark: s.currentDayBookmark,
         bookingLinks: s.bookingLinks,
+        userPacking: s.userPacking,
+        userFood: s.userFood,
+        userToBook: s.userToBook,
+        userIdeas: s.userIdeas,
+        userPhrases: s.userPhrases,
         bookingsWalletView: s.bookingsWalletView,
         daysViewMode: s.daysViewMode,
         selectedCalendarDay: s.selectedCalendarDay,

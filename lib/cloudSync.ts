@@ -1,6 +1,13 @@
 import { doc, onSnapshot, setDoc, updateDoc, type Unsubscribe } from 'firebase/firestore';
 import { db } from './firebase';
-import type { TripSyncData } from './cloudSyncTypes';
+import type {
+  TripSyncData,
+  UserPackingItem,
+  UserFoodItem,
+  UserToBookItem,
+  UserIdeaItem,
+  UserPhraseItem,
+} from './cloudSyncTypes';
 
 export type { TripSyncData } from './cloudSyncTypes';
 
@@ -17,6 +24,11 @@ const defaultSyncData: TripSyncData = {
   packingChecked: {},
   bookingLinks: {},
   dayCaptions: {},
+  userPacking: [],
+  userFood: [],
+  userToBook: [],
+  userIdeas: [],
+  userPhrases: [],
 };
 
 export function subscribeToTripData(
@@ -36,6 +48,11 @@ export function subscribeToTripData(
         packingChecked: data.packingChecked ?? {},
         bookingLinks: data.bookingLinks ?? {},
         dayCaptions: data.dayCaptions ?? {},
+        userPacking: data.userPacking ?? [],
+        userFood: data.userFood ?? [],
+        userToBook: data.userToBook ?? [],
+        userIdeas: data.userIdeas ?? [],
+        userPhrases: data.userPhrases ?? [],
       });
     } else {
       setDoc(ref, defaultSyncData);
@@ -89,4 +106,34 @@ export async function syncDayCaption(dayNumber: number, caption: string) {
   await updateDoc(ref, {
     [`dayCaptions.${dayNumber}`]: caption,
   });
+}
+
+export async function syncUserPacking(items: UserPackingItem[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { userPacking: items }, { merge: true });
+}
+
+export async function syncUserFood(items: UserFoodItem[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { userFood: items }, { merge: true });
+}
+
+export async function syncUserToBook(items: UserToBookItem[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { userToBook: items }, { merge: true });
+}
+
+export async function syncUserIdeas(items: UserIdeaItem[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { userIdeas: items }, { merge: true });
+}
+
+export async function syncUserPhrases(items: UserPhraseItem[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { userPhrases: items }, { merge: true });
 }

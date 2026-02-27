@@ -227,7 +227,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             marginTop: '12px',
           }}
         >
-          Tal & Elad · Japan 2025
+          Tal & Elad · Japan 2026
         </motion.div>
 
         {/* When video failed: show Continue button (auto-continue also runs) */}
