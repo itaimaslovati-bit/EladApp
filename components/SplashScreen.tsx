@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface SplashScreenProps {
@@ -13,11 +13,25 @@ const DURATION_MS = 4300;
 export function SplashScreen({ onComplete }: SplashScreenProps) {
   const [phase, setPhase] = useState<'video' | 'text' | 'subtitle' | 'fadeout' | 'done'>('video');
   const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleComplete = useCallback(() => {
     setPhase('done');
     onComplete();
   }, [onComplete]);
+
+  // Force video to play (required in production / some browsers even with autoPlay muted)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const play = () => {
+      video.muted = true;
+      video.play().catch(() => setVideoError(true));
+    };
+    if (video.readyState >= 2) play();
+    else video.addEventListener('loadeddata', play, { once: true });
+    return () => video.removeEventListener('loadeddata', play);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('text'), 500);
@@ -41,12 +55,15 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       animate={{ opacity: phase === 'fadeout' ? 0 : 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Video background */}
+      {/* Video background — ref + programmatic play() for production */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         playsInline
         loop={false}
+        preload="auto"
+        disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover"
         src={SPLASH_VIDEO_SRC}
         onError={() => setVideoError(true)}

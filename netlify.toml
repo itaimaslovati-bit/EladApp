@@ -7,3 +7,10 @@
 # Use Netlify's Next.js plugin so routes and SSR work correctly
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Ensure splash video is served as video (not as image) and is cacheable
+[[headers]]
+  for = "/splash.mp4"
+  [headers.values]
+    Content-Type = "video/mp4"
+    Cache-Control = "public, max-age=31536000, immutable"
