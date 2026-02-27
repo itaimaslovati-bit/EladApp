@@ -59,13 +59,13 @@ export const OVERVIEW_DAYS: OverviewDay[] = [
   { dayNumber: 39, title: 'Departure Day', date: 'Tue, Apr 14 · Evening flight Haneda', region: 'tokyo', mapsLink: H('Tokyo Haneda Airport Japan') },
 ];
 
-// --- Cost summary ---
+// --- Cost summary (defaults; overridden by store when user edits) ---
 export const COST_SUMMARY: CostRow[] = [
-  { label: 'Accommodation (38 nights)', amount: '₪~30,215' },
-  { label: 'Domestic Flights (3)', amount: '₪~5,700' },
-  { label: 'Car Rentals (3)', amount: '₪~6,200' },
-  { label: 'Attractions (Universal, TeamLab)', amount: '₪~1,942' },
-  { label: 'Estimated Total', amount: '₪~44,000', isTotal: true },
+  { label: 'Accommodation (38 nights)', amount: '₪30,215' },
+  { label: 'Domestic Flights (3)', amount: '₪5,700' },
+  { label: 'Car Rentals (3)', amount: '₪6,200' },
+  { label: 'Attractions (Universal, TeamLab)', amount: '₪1,942' },
+  { label: 'Estimated Total', amount: '₪44,000', isTotal: true },
 ];
 
 export const COST_SUMMARY_NOTE = 'Excluding: international flights, food, trains, daily expenses';
@@ -91,7 +91,7 @@ export const RESERVATIONS_HOTELS: Reservation[] = [
 
 export const RESERVATIONS_DINING: Reservation[] = [
   { title: 'Gyopao Gyoza Roppongi', details: [{ label: 'Date', value: 'Tue, Mar 10 at 19:30' }, { label: 'Location', value: 'Roppongi, Tokyo' }, { label: 'Day', value: 'Day 4' }] },
-  { title: 'Takachiho Kagura Night Performance', details: [{ label: 'Date', value: 'Sun, Mar 29 at 20:00' }, { label: 'Location', value: 'Takachiho Shrine, Miyazaki' }, { label: 'Day', value: 'Day 23' }, { label: 'Cost', value: '₪25 (~¥1,000 at the door)' }], price: '₪25 (~¥1,000 at the door)' },
+  { title: 'Takachiho Kagura Night Performance', details: [{ label: 'Date', value: 'Sun, Mar 29 at 20:00' }, { label: 'Location', value: 'Takachiho Shrine, Miyazaki' }, { label: 'Day', value: 'Day 23' }, { label: 'Cost', value: '₪25 (¥1,000 at the door)' }], price: '₪25 (¥1,000 at the door)' },
 ];
 
 export const RESERVATIONS_FLIGHTS: Reservation[] = [
@@ -102,8 +102,8 @@ export const RESERVATIONS_FLIGHTS: Reservation[] = [
 
 export const RESERVATIONS_CARS: Reservation[] = [
   { title: 'Central Japan (Nagoya pickup & return)', details: [{ label: 'Dates', value: 'Mar 18 → Mar 22' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '₪1,350 ($365)' }], price: '₪1,350 ($365)' },
-  { title: 'Kyushu (Fukuoka area)', details: [{ label: 'Dates', value: '~Mar 24 → Apr 3' }, { label: 'Company', value: 'Budget' }, { label: 'Cost', value: '₪~1,800' }], price: '₪~1,800' },
-  { title: 'Ishigaki', details: [{ label: 'Dates', value: 'Apr 3-7' }, { label: 'Company', value: 'Nissan Rent-a-Car' }, { label: 'Cost', value: '₪~720' }], price: '₪~720' },
+  { title: 'Kyushu (Fukuoka area)', details: [{ label: 'Dates', value: 'Mar 24 → Apr 3' }, { label: 'Company', value: 'Budget' }, { label: 'Cost', value: '₪1,800' }], price: '₪1,800' },
+  { title: 'Ishigaki', details: [{ label: 'Dates', value: 'Apr 3-7' }, { label: 'Company', value: 'Nissan Rent-a-Car' }, { label: 'Cost', value: '₪720' }], price: '₪720' },
   { title: 'Miyakojima', details: [{ label: 'Dates', value: 'Apr 7-10' }, { label: 'Company', value: 'Budget (via Klook)' }, { label: 'Cost', value: '₪965 ($261)' }], price: '₪965 ($261)' },
 ];
 

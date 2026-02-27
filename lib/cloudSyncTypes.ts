@@ -40,6 +40,13 @@ export interface UserPhraseItem {
   japanese: string;
 }
 
+/** Editable trip budget row */
+export interface CostSummaryRow {
+  label: string;
+  amount: string;
+  isTotal?: boolean;
+}
+
 /** Firestore uses string keys; synced data shape (no Firebase deps) */
 export interface TripSyncData {
   checklist: Record<string, boolean>;
@@ -47,6 +54,7 @@ export interface TripSyncData {
   packingChecked: Record<string, boolean>;
   bookingLinks: Record<string, string>;
   dayCaptions: Record<string, string>;
+  costSummary: CostSummaryRow[];
   userPacking: UserPackingItem[];
   userFood: UserFoodItem[];
   userToBook: UserToBookItem[];

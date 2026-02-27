@@ -468,7 +468,7 @@ export const TRIP_DAYS: TripDay[] = [
       { title: 'Travel', items: [
         { text: 'Drive back towards Fukuoka / drop car', mapsLink: H('Fukuoka Airport Japan') },
         { text: 'Peach Airlines flight at 12:20 to Ishigaki', tip: 'Peach is a budget airline! Baggage is NOT included — pre-purchase checked bags online (cheaper than at airport). Arrive 1.5h before departure. Bring snacks, no free food onboard.', mapsLink: H('Ishigaki Airport Okinawa Japan') },
-        { text: 'Pick up rental car (Nissan, ₪~720)' },
+        { text: 'Pick up rental car (Nissan, ₪720)' },
       ]},
       { title: 'Hotel', items: [{ text: 'Seven x Seven Ishigaki', mapsLink: H('Seven x Seven Ishigaki Japan') }] },
     ],

@@ -2,6 +2,7 @@ import { doc, onSnapshot, setDoc, updateDoc, type Unsubscribe } from 'firebase/f
 import { db } from './firebase';
 import type {
   TripSyncData,
+  CostSummaryRow,
   UserPackingItem,
   UserFoodItem,
   UserToBookItem,
@@ -24,6 +25,7 @@ const defaultSyncData: TripSyncData = {
   packingChecked: {},
   bookingLinks: {},
   dayCaptions: {},
+  costSummary: [],
   userPacking: [],
   userFood: [],
   userToBook: [],
@@ -48,6 +50,7 @@ export function subscribeToTripData(
         packingChecked: data.packingChecked ?? {},
         bookingLinks: data.bookingLinks ?? {},
         dayCaptions: data.dayCaptions ?? {},
+        costSummary: data.costSummary ?? [],
         userPacking: data.userPacking ?? [],
         userFood: data.userFood ?? [],
         userToBook: data.userToBook ?? [],
@@ -88,6 +91,12 @@ export async function syncBookingLinks(bookingLinks: Record<string, string>) {
   const ref = getTripDocRef();
   if (!ref) return;
   await setDoc(ref, { bookingLinks }, { merge: true });
+}
+
+export async function syncCostSummary(costSummary: CostSummaryRow[]) {
+  const ref = getTripDocRef();
+  if (!ref) return;
+  await setDoc(ref, { costSummary }, { merge: true });
 }
 
 /** dayCaptions keyed by day number */

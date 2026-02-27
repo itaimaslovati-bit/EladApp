@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CHECKLIST_ITEMS_FLAT, TODO_ITEMS, PACKING_ITEMS_FLAT } from './data';
+import { CHECKLIST_ITEMS_FLAT, TODO_ITEMS, PACKING_ITEMS_FLAT, COST_SUMMARY } from './data';
 import type {
   TripSyncData,
+  CostSummaryRow,
   UserPackingItem,
   UserFoodItem,
   UserToBookItem,
@@ -16,6 +17,7 @@ function syncLater(
     syncToBookChecked: (c: Record<number, boolean>) => Promise<void>;
     syncPackingChecked: (c: Record<number, boolean>) => Promise<void>;
     syncBookingLinks: (b: Record<string, string>) => Promise<void>;
+    syncCostSummary: (c: CostSummaryRow[]) => Promise<void>;
     syncDayCaption: (d: number, caption: string) => Promise<void>;
     syncDayCaptions: (d: Record<number, string>) => Promise<void>;
     syncUserPacking: (items: UserPackingItem[]) => Promise<void>;
@@ -73,6 +75,8 @@ interface AppState {
   setCurrentDayBookmark: (day: number | null) => void;
   bookingLinks: Record<string, string>;
   setBookingLink: (reservationId: string, url: string) => void;
+  costSummary: CostSummaryRow[];
+  setCostSummaryRow: (index: number, amount: string) => void;
   userPacking: UserPackingItem[];
   addUserPacking: (item: Omit<UserPackingItem, 'id'>) => void;
   removeUserPacking: (id: string) => void;
@@ -185,6 +189,16 @@ export const useStore = create<AppState>()(
               })();
           syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(next), { logErrors: true });
           return { bookingLinks: next };
+        });
+      },
+      costSummary: COST_SUMMARY,
+      setCostSummaryRow: (index, amount) => {
+        set((state) => {
+          const next = state.costSummary.map((row, i) =>
+            i === index ? { ...row, amount: amount.trim() || row.amount } : row
+          );
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncCostSummary(next));
+          return { costSummary: next };
         });
       },
       userPacking: [],
@@ -301,12 +315,17 @@ export const useStore = create<AppState>()(
               preferLocal
                 ? (useStore.getState().bookingLinks ?? {})
                 : (data?.bookingLinks ?? {});
+            const costSummary =
+              (data?.costSummary?.length ?? 0) > 0
+                ? data.costSummary
+                : (useStore.getState().costSummary ?? COST_SUMMARY);
             set({
               checklist: { ...defaultChecklist, ...numKeys(data?.checklist ?? {}) },
               toBookChecked: { ...defaultToBook, ...numKeys(data?.toBookChecked ?? {}) },
               packingChecked: { ...defaultPacking, ...numKeys(data?.packingChecked ?? {}) },
               bookingLinks,
               dayCaptions: numKeys(data?.dayCaptions ?? {}),
+              costSummary,
               userPacking: data?.userPacking ?? [],
               userFood: data?.userFood ?? [],
               userToBook: data?.userToBook ?? [],
@@ -327,6 +346,7 @@ export const useStore = create<AppState>()(
         iranDismissed: s.iranDismissed,
         currentDayBookmark: s.currentDayBookmark,
         bookingLinks: s.bookingLinks,
+        costSummary: s.costSummary,
         userPacking: s.userPacking,
         userFood: s.userFood,
         userToBook: s.userToBook,
