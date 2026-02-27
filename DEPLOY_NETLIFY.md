@@ -31,11 +31,27 @@ git push -u origin main
 - To use your own domain: **Domain settings** → **Add custom domain**.
 - To change the site name: **Site settings** → **Change site name**.
 
-## 4. Optional: environment variables
+## 4. Environment variables (required for Firebase)
 
-This app doesn’t require env vars for basic use. If you add any later, set them in Netlify:
+Set these in Netlify so the build does not expose secrets and Firebase works in production:
 
 **Site settings** → **Environment variables** → **Add a variable** (or **Import from .env**).
+
+Add each of these (get values from Firebase Console → Project settings → General → Your apps):
+
+| Variable | Example (replace with yours) |
+|----------|-----------------------------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Your Web API Key |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | `eladtrip.firebaseapp.com` |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | `eladtrip` |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | `eladtrip.firebasestorage.app` |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Your sender ID |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Your app ID |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | Your measurement ID (e.g. G-...) |
+
+After adding them, trigger a new deploy (**Deploys** → **Trigger deploy** → **Deploy site**).
+
+For local development, create a `.env.local` in the project root with the same variable names and values (`.env.local` is gitignored).
 
 ## 5. Firebase (cloud sync)
 

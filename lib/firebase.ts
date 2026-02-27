@@ -2,14 +2,17 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCeMfnhLyBX2VQQatLS28L6gpwGKOXmEDk',
-  authDomain: 'eladtrip.firebaseapp.com',
-  projectId: 'eladtrip',
-  storageBucket: 'eladtrip.firebasestorage.app',
-  messagingSenderId: '884136866305',
-  appId: '1:884136866305:web:6b80a1b4f5e920534a8600',
-  measurementId: 'G-YKEWVNCMQ8',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const app =
+  firebaseConfig.apiKey && firebaseConfig.projectId
+    ? initializeApp(firebaseConfig)
+    : null;
+export const db = app ? getFirestore(app) : (null as ReturnType<typeof getFirestore>);

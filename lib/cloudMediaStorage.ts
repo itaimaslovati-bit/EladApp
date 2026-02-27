@@ -12,7 +12,11 @@ import {
 import { db } from './firebase';
 
 const TRIP_ID = 'japan-2025';
-const mediaCollection = collection(db, 'trips', TRIP_ID, 'media');
+
+function getMediaCollection() {
+  if (!db) return null;
+  return collection(db, 'trips', TRIP_ID, 'media');
+}
 
 export interface CloudMediaItem {
   id: string;
@@ -100,7 +104,9 @@ export async function uploadPhoto(
     timestamp: Date.now(),
     uploadedBy,
   };
-  const docRef = await addDoc(mediaCollection, docData);
+  const coll = getMediaCollection();
+  if (!coll) throw new Error('Firebase not configured');
+  const docRef = await addDoc(coll, docData);
   return { id: docRef.id, ...docData };
 }
 
@@ -108,8 +114,13 @@ export function subscribeToMediaForDay(
   dayNumber: number,
   callback: (media: CloudMediaItem[]) => void
 ): Unsubscribe {
+  const coll = getMediaCollection();
+  if (!coll) {
+    callback([]);
+    return () => {};
+  }
   const q = query(
-    mediaCollection,
+    coll,
     where('dayNumber', '==', dayNumber),
     orderBy('timestamp', 'asc')
   );
@@ -123,8 +134,13 @@ export function subscribeToMediaForDay(
 export function subscribeToAllMedia(
   callback: (media: CloudMediaItem[]) => void
 ): Unsubscribe {
+  const coll = getMediaCollection();
+  if (!coll) {
+    callback([]);
+    return () => {};
+  }
   const q = query(
-    mediaCollection,
+    coll,
     orderBy('dayNumber', 'asc'),
     orderBy('timestamp', 'asc')
   );
@@ -138,7 +154,12 @@ export function subscribeToAllMedia(
 export function subscribeToMediaCounts(
   callback: (counts: Record<number, number>) => void
 ): Unsubscribe {
-  return onSnapshot(mediaCollection, (snapshot) => {
+  const coll = getMediaCollection();
+  if (!coll) {
+    callback({});
+    return () => {};
+  }
+  return onSnapshot(coll, (snapshot) => {
     const counts: Record<number, number> = {};
     snapshot.docs.forEach((d) => {
       const dayNum = d.data().dayNumber as number;
@@ -149,5 +170,6 @@ export function subscribeToMediaCounts(
 }
 
 export async function deleteCloudMedia(id: string): Promise<void> {
+  if (!db) return;
   await deleteDoc(doc(db, 'trips', TRIP_ID, 'media', id));
 }
