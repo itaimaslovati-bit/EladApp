@@ -40,7 +40,10 @@ const USER_NAME_KEY = 'userName';
 
 const BOOKING_LINKS_LOCAL_KEY = 'bookingLinksLocal';
 
-/** Once user has set/removed a link this session, never overwrite bookingLinks from Firestore (so delete sticks). */
+/** Pending booking links from setBookingLink — use this in applyRemoteData so we never overwrite a just-applied delete/edit. */
+let pendingBookingLinks: Record<string, string> | null = null;
+
+/** Once user has set/removed a link this session (or we rehydrated with links), never overwrite from Firestore. */
 function shouldPreferLocalBookingLinks(): boolean {
   if (typeof window === 'undefined') return false;
   return sessionStorage.getItem(BOOKING_LINKS_LOCAL_KEY) === 'true';
@@ -187,6 +190,7 @@ export const useStore = create<AppState>()(
                 delete n[reservationId];
                 return n;
               })();
+          pendingBookingLinks = next;
           syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(next), { logErrors: true });
           return { bookingLinks: next };
         });
@@ -308,13 +312,19 @@ export const useStore = create<AppState>()(
       },
         applyRemoteData: (data: TripSyncData) => {
           try {
-            const preferLocal = shouldPreferLocalBookingLinks();
-            if (!preferLocal && typeof window !== 'undefined')
-              sessionStorage.setItem(BOOKING_LINKS_LOCAL_KEY, 'true'); // so next snapshot we prefer local
-            const bookingLinks =
-              preferLocal
-                ? (useStore.getState().bookingLinks ?? {})
-                : (data?.bookingLinks ?? {});
+            let bookingLinks: Record<string, string>;
+            if (pendingBookingLinks !== null) {
+              bookingLinks = pendingBookingLinks;
+              pendingBookingLinks = null;
+            } else {
+              const preferLocal = shouldPreferLocalBookingLinks();
+              if (!preferLocal && typeof window !== 'undefined')
+                sessionStorage.setItem(BOOKING_LINKS_LOCAL_KEY, 'true');
+              bookingLinks =
+                preferLocal
+                  ? (useStore.getState().bookingLinks ?? {})
+                  : (data?.bookingLinks ?? {});
+            }
             const costSummary =
               (data?.costSummary?.length ?? 0) > 0
                 ? data.costSummary
@@ -357,6 +367,10 @@ export const useStore = create<AppState>()(
         selectedCalendarDay: s.selectedCalendarDay,
         dayCaptions: s.dayCaptions,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state?.bookingLinks && Object.keys(state.bookingLinks).length > 0)
+          markBookingLinksTouched();
+      },
     }
   )
 );
