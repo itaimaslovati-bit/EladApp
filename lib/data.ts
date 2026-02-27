@@ -381,6 +381,9 @@ export const PACKING_SECTIONS: PackingSection[] = [
   ], note: 'Luggage forwarding (takkyubin) is amazing in Japan: send your suitcase to the next hotel for ~2,000 yen. Use it when switching between train and car segments!' },
 ];
 
+/** Flat list of all packing item texts for store indexing (same order as sections) */
+export const PACKING_ITEMS_FLAT = PACKING_SECTIONS.flatMap((s) => s.items.map((i) => i.text));
+
 // --- Checklist (categories + flat list for store) ---
 export const CHECKLIST_CATEGORIES: ChecklistCategory[] = [
   { category: 'Documents & Essentials', items: ['Passport (valid)', 'Travel insurance details', 'International driving permit (for rental days)'] },

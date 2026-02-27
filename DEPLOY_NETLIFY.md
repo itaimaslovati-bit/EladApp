@@ -37,7 +37,15 @@ This app doesn’t require env vars for basic use. If you add any later, set the
 
 **Site settings** → **Environment variables** → **Add a variable** (or **Import from .env**).
 
-## 5. PWA and caching
+## 5. Firebase (cloud sync)
+
+- **Photos** sync via Firestore (`trips/japan-2025/media`). No Firebase Storage — images are stored as base64 in documents (Spark plan).
+- **Checklist, To Book, Packing, booking links, day captions** sync via `trips/japan-2025` document.
+- **First run:** The browser console may show a Firestore error asking you to create an index. Click the link in the error — it opens the Firebase console and creates the required index. Wait 1–2 minutes, then refresh. You may need indexes for:
+  - `media`: `dayNumber` (asc) + `timestamp` (asc)
+  - `media`: `dayNumber` (==) + `timestamp` (asc)
+
+## 6. PWA and caching
 
 - The app uses `next-pwa`. The service worker and `manifest.json` are built and deployed with the site.
 - Users can **Add to Home Screen** on supported browsers; the PWA will load from your Netlify URL.

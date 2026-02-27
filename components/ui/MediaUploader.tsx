@@ -7,69 +7,125 @@ import {
   saveMedia,
   deleteMedia,
   readFileAsDataUrl,
-  generateThumbnail,
   generateVideoThumbnail,
-  compressImage,
   type MediaItem,
 } from '@/lib/mediaStorage';
+import {
+  uploadPhoto,
+  subscribeToMediaForDay,
+  deleteCloudMedia,
+  type CloudMediaItem,
+} from '@/lib/cloudMediaStorage';
+import { useStore } from '@/lib/store';
 import { Lightbox } from '@/components/ui/Lightbox';
+import type { DisplayMediaItem } from '@/lib/mediaTypes';
 
 interface MediaUploaderProps {
   dayNumber: number;
   onMediaAdded: () => void;
 }
 
+function toDisplayItems(
+  cloud: CloudMediaItem[],
+  localVideos: MediaItem[]
+): DisplayMediaItem[] {
+  const list: DisplayMediaItem[] = [
+    ...cloud.map((c) => ({
+      type: 'image' as const,
+      id: c.id,
+      thumbnail: c.thumbnail,
+      fullUrl: c.imageData,
+      timestamp: c.timestamp,
+      uploadedBy: c.uploadedBy,
+      source: 'cloud' as const,
+    })),
+    ...localVideos.map((v) => ({
+      type: 'video' as const,
+      id: v.id,
+      thumbnail: v.thumbnail,
+      fullUrl: v.dataUrl,
+      timestamp: v.timestamp,
+      source: 'local' as const,
+    })),
+  ];
+  list.sort((a, b) => a.timestamp - b.timestamp);
+  return list;
+}
+
 export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
-  const [items, setItems] = useState<MediaItem[]>([]);
+  const userName = useStore((s) => s.userName) ?? 'Unknown';
+  const [cloudImages, setCloudImages] = useState<CloudMediaItem[]>([]);
+  const [localVideos, setLocalVideos] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [lightboxItem, setLightboxItem] = useState<MediaItem | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<DisplayMediaItem | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const load = () => {
-    getMediaForDay(dayNumber).then(setItems);
+  useEffect(() => {
+    return subscribeToMediaForDay(dayNumber, setCloudImages);
+  }, [dayNumber]);
+
+  const loadLocalVideos = () => {
+    getMediaForDay(dayNumber).then((all) =>
+      setLocalVideos(all.filter((m) => m.type === 'video'))
+    );
   };
 
   useEffect(() => {
-    load();
+    loadLocalVideos();
   }, [dayNumber]);
+
+  const items = toDisplayItems(cloudImages, localVideos);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files?.length) return;
+    const imageFiles = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const videoFiles = Array.from(files).filter((f) => f.type.startsWith('video/'));
     setLoading(true);
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const isVideo = file.type.startsWith('video/');
-        const dataUrl = await readFileAsDataUrl(file);
-        const thumbnail = isVideo
-          ? await generateVideoThumbnail(dataUrl)
-          : await generateThumbnail(dataUrl);
-        const compressedDataUrl = isVideo ? dataUrl : await compressImage(dataUrl, 1200, 0.8);
-        const id = `day-${dayNumber}-${Date.now()}-${i}`;
-        const item: MediaItem = {
-          id,
-          dayNumber,
-          type: isVideo ? 'video' : 'image',
-          dataUrl: compressedDataUrl,
-          thumbnail,
-          timestamp: Date.now(),
-          fileName: file.name,
-        };
-        await saveMedia(item);
+      if (imageFiles.length > 0) {
+        for (let i = 0; i < imageFiles.length; i++) {
+          setUploadProgress(`Uploading ${i + 1} of ${imageFiles.length}…`);
+          await uploadPhoto(dayNumber, imageFiles[i], userName);
+        }
+        setUploadProgress(null);
       }
-      load();
+      if (videoFiles.length > 0) {
+        for (let i = 0; i < videoFiles.length; i++) {
+          const file = videoFiles[i];
+          const dataUrl = await readFileAsDataUrl(file);
+          const thumbnail = await generateVideoThumbnail(dataUrl);
+          const id = `day-${dayNumber}-${Date.now()}-v-${i}`;
+          const item: MediaItem = {
+            id,
+            dayNumber,
+            type: 'video',
+            dataUrl,
+            thumbnail,
+            timestamp: Date.now(),
+            fileName: file.name,
+          };
+          await saveMedia(item);
+        }
+        loadLocalVideos();
+      }
       onMediaAdded();
     } finally {
       setLoading(false);
+      setUploadProgress(null);
       if (inputRef.current) inputRef.current.value = '';
     }
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteMedia(id);
+  const handleDelete = async (item: DisplayMediaItem) => {
+    if (item.source === 'cloud') {
+      await deleteCloudMedia(item.id);
+    } else {
+      await deleteMedia(item.id);
+      loadLocalVideos();
+    }
     setLightboxItem(null);
-    load();
     onMediaAdded();
   };
 
@@ -105,6 +161,12 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
                 </span>
               </>
             )}
+            {/* Uploader initial (cloud) or device-only badge (local video) */}
+            <span className="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs font-bold flex items-center justify-center">
+              {item.source === 'cloud' && item.uploadedBy
+                ? item.uploadedBy[0].toUpperCase()
+                : '📱'}
+            </span>
           </button>
         ))}
         <label className="aspect-square rounded-[10px] border-2 border-dashed border-divider flex items-center justify-center cursor-pointer active:bg-stone-50 min-h-[80px]">
@@ -119,7 +181,9 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
             className="hidden"
           />
           {loading ? (
-            <span className="text-text-secondary text-sm">Uploading…</span>
+            <span className="text-text-secondary text-sm text-center px-1">
+              {uploadProgress ?? 'Uploading…'}
+            </span>
           ) : (
             <span className="text-accent font-medium text-sm">Add +</span>
           )}
@@ -130,7 +194,7 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
         <Lightbox
           media={lightboxItem}
           onClose={() => setLightboxItem(null)}
-          onDelete={() => handleDelete(lightboxItem.id)}
+          onDelete={() => handleDelete(lightboxItem)}
           onPrev={prevItem ? () => setLightboxItem(prevItem) : undefined}
           onNext={nextItem ? () => setLightboxItem(nextItem) : undefined}
         />

@@ -1,36 +1,63 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { MediaUploader } from '@/components/ui/MediaUploader';
-import { Slideshow } from '@/components/ui/Slideshow';
-import { getAllMedia, getMediaCounts } from '@/lib/mediaStorage';
+import { Slideshow, type SlideshowPhoto } from '@/components/ui/Slideshow';
+import { getAllMedia } from '@/lib/mediaStorage';
+import { subscribeToAllMedia, subscribeToMediaCounts, type CloudMediaItem } from '@/lib/cloudMediaStorage';
 import { findDayByNumber } from '@/lib/tripDays';
 import { REGION_COLORS } from '@/lib/regions';
 import { useStore } from '@/lib/store';
 
 const TRIP_DAYS_COUNT = 39;
 
+function getDayTitle(dayNumber: number): string {
+  const day = findDayByNumber(dayNumber);
+  return day?.title ?? `Day ${dayNumber}`;
+}
+function getDayDate(dayNumber: number): string {
+  const day = findDayByNumber(dayNumber);
+  return day?.date ?? '';
+}
+
 export default function MemoriesPage() {
   const router = useRouter();
   const { dayCaptions, setDayCaption } = useStore();
-  const [mediaCountByDay, setMediaCountByDay] = useState<Record<number, number>>({});
+  const [cloudMedia, setCloudMedia] = useState<CloudMediaItem[]>([]);
+  const [localVideos, setLocalVideos] = useState<Awaited<ReturnType<typeof getAllMedia>>>([]);
+  const [cloudCounts, setCloudCounts] = useState<Record<number, number>>({});
   const [showAllDays, setShowAllDays] = useState(true);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
   const [showSlideshow, setShowSlideshow] = useState(false);
 
-  const refreshCounts = useCallback(() => {
-    getMediaCounts().then(setMediaCountByDay);
+  useEffect(() => {
+    return subscribeToAllMedia(setCloudMedia);
+  }, []);
+  useEffect(() => {
+    return subscribeToMediaCounts(setCloudCounts);
   }, []);
 
+  const refreshCounts = useCallback(() => {
+    getAllMedia().then((all) =>
+      setLocalVideos(all.filter((m) => m.type === 'video'))
+    );
+  }, []);
   useEffect(() => {
     refreshCounts();
   }, [refreshCounts]);
+
+  const mediaCountByDay = useMemo(() => {
+    const out: Record<number, number> = {};
+    for (let d = 1; d <= TRIP_DAYS_COUNT; d++) {
+      out[d] = (cloudCounts[d] ?? 0) + (localVideos.filter((v) => v.dayNumber === d).length);
+    }
+    return out;
+  }, [cloudCounts, localVideos]);
 
   const totalPhotos = Object.values(mediaCountByDay).reduce((a, b) => a + b, 0);
   const daysWithMedia = Object.keys(mediaCountByDay).filter((d) => mediaCountByDay[Number(d)] > 0).length;
@@ -40,16 +67,40 @@ export default function MemoriesPage() {
     ? allDays
     : allDays.filter((d) => (mediaCountByDay[d] ?? 0) > 0);
 
+  const slideshowPhotos: SlideshowPhoto[] = useMemo(
+    () =>
+      cloudMedia.map((m) => ({
+        id: m.id,
+        dayNumber: m.dayNumber,
+        imageData: m.imageData,
+        dayTitle: getDayTitle(m.dayNumber),
+        dayDate: getDayDate(m.dayNumber),
+      })),
+    [cloudMedia]
+  );
+
   const handleDownload = async () => {
-    const allMedia = await getAllMedia();
-    if (allMedia.length === 0) {
+    const cloudItems = cloudMedia.map((m) => ({
+      dayNumber: m.dayNumber,
+      type: 'image' as const,
+      dataUrl: m.imageData,
+      id: m.id,
+    }));
+    const localItems = localVideos.map((m) => ({
+      dayNumber: m.dayNumber,
+      type: 'video' as const,
+      dataUrl: m.dataUrl,
+      id: m.id,
+    }));
+    const allItems = [...cloudItems, ...localItems];
+    if (allItems.length === 0) {
       alert('No memories to download yet! Add some photos first.');
       return;
     }
     setDownloadProgress(0);
     const zip = new JSZip();
-    const byDay = new Map<number, typeof allMedia>();
-    for (const item of allMedia) {
+    const byDay = new Map<number, typeof allItems>();
+    for (const item of allItems) {
       if (!byDay.has(item.dayNumber)) byDay.set(item.dayNumber, []);
       byDay.get(item.dayNumber)!.push(item);
     }
@@ -106,7 +157,6 @@ export default function MemoriesPage() {
           </p>
         </div>
 
-        {/* Toggle: Show all days / Only with memories */}
         <div className="flex rounded-xl border border-divider bg-gray-100 p-1">
           <button
             type="button"
@@ -124,7 +174,6 @@ export default function MemoriesPage() {
           </button>
         </div>
 
-        {/* Day cards */}
         <div className="space-y-4">
           {daysToShow.map((dayNum) => {
             const day = findDayByNumber(dayNum);
@@ -158,7 +207,6 @@ export default function MemoriesPage() {
           })}
         </div>
 
-        {/* Download All */}
         <button
           type="button"
           onClick={handleDownload}
@@ -170,11 +218,10 @@ export default function MemoriesPage() {
             : '📥 Download All Memories'}
         </button>
 
-        {/* Slideshow */}
         <button
           type="button"
           onClick={() => setShowSlideshow(true)}
-          disabled={totalPhotos === 0}
+          disabled={slideshowPhotos.length === 0}
           className="w-full py-4 rounded-xl border-2 border-divider bg-surface font-semibold text-text-primary disabled:opacity-50"
         >
           ▶️ Play Slideshow
@@ -185,7 +232,12 @@ export default function MemoriesPage() {
         </p>
       </div>
 
-      {showSlideshow && <Slideshow onClose={() => setShowSlideshow(false)} />}
+      {showSlideshow && (
+        <Slideshow
+          photos={slideshowPhotos}
+          onClose={() => setShowSlideshow(false)}
+        />
+      )}
     </PageTransition>
   );
 }

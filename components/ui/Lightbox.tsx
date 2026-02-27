@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { MediaItem } from '@/lib/mediaStorage';
+import type { DisplayMediaItem } from '@/lib/mediaTypes';
 
 interface LightboxProps {
-  media: MediaItem;
+  media: DisplayMediaItem;
   onClose: () => void;
   onDelete: () => void;
   onPrev?: () => void;
@@ -25,7 +25,7 @@ export function Lightbox({
   useEffect(() => {
     if (media.type !== 'video') return;
     let url: string | null = null;
-    fetch(media.dataUrl)
+    fetch(media.fullUrl)
       .then((r) => r.blob())
       .then((blob) => {
         url = URL.createObjectURL(blob);
@@ -34,10 +34,10 @@ export function Lightbox({
     return () => {
       if (url) URL.revokeObjectURL(url);
     };
-  }, [media.id, media.type, media.dataUrl]);
+  }, [media.id, media.type, media.fullUrl]);
 
   const handleDelete = () => {
-    if (confirm('Delete this photo?')) {
+    if (confirm('Delete this?')) {
       onDelete();
       onClose();
     }
@@ -53,7 +53,6 @@ export function Lightbox({
         className="fixed inset-0 z-[9999] bg-black/95 flex flex-col"
         style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        {/* Top bar */}
         <div className="flex items-center justify-between p-3 shrink-0">
           <button
             type="button"
@@ -73,7 +72,6 @@ export function Lightbox({
           </button>
         </div>
 
-        {/* Content area - tappable left/right for prev/next */}
         <div className="flex-1 flex items-center justify-center relative min-h-0">
           {onPrev && (
             <button
@@ -99,7 +97,7 @@ export function Lightbox({
           <div className="max-w-full max-h-full flex items-center justify-center touch-pinch-zoom">
             {media.type === 'image' ? (
               <img
-                src={media.dataUrl}
+                src={media.fullUrl}
                 alt=""
                 className="max-w-full max-h-[70vh] w-auto h-auto object-contain"
                 style={{ touchAction: 'pinch-zoom' }}

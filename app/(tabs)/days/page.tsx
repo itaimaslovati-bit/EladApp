@@ -13,6 +13,7 @@ import { MediaUploader } from '@/components/ui/MediaUploader';
 import { TRIP_DAYS } from '@/lib/data';
 import { REGION_COLORS } from '@/lib/regions';
 import { getMediaCounts } from '@/lib/mediaStorage';
+import { subscribeToMediaCounts } from '@/lib/cloudMediaStorage';
 import { getTodayDayNumber } from '@/lib/utils';
 import { useStore } from '@/lib/store';
 import type { TripDay } from '@/lib/types';
@@ -79,14 +80,27 @@ function DaysContent() {
 
   const todayDayNumber = debugDayOverride ?? getTodayDayNumber();
 
-  const [mediaCountByDay, setMediaCountByDay] = useState<Record<number, number>>({});
+  const [cloudCounts, setCloudCounts] = useState<Record<number, number>>({});
+  const [localCounts, setLocalCounts] = useState<Record<number, number>>({});
   const refreshMediaCounts = useCallback(() => {
-    getMediaCounts().then(setMediaCountByDay);
+    getMediaCounts().then(setLocalCounts); // local = videos only (images are in cloud)
   }, []);
 
   useEffect(() => {
+    return subscribeToMediaCounts(setCloudCounts);
+  }, []);
+  useEffect(() => {
     refreshMediaCounts();
   }, [refreshMediaCounts]);
+
+  const mediaCountByDay = useMemo(() => {
+    const out: Record<number, number> = {};
+    const days = new Set([...Object.keys(cloudCounts).map(Number), ...Object.keys(localCounts).map(Number)]);
+    days.forEach((d) => {
+      out[d] = (cloudCounts[d] ?? 0) + (localCounts[d] ?? 0);
+    });
+    return out;
+  }, [cloudCounts, localCounts]);
 
   const dayMap = useMemo(() => {
     const m = new Map<number, TripDay>();

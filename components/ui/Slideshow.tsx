@@ -3,43 +3,28 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause } from 'lucide-react';
-import { getAllMedia } from '@/lib/mediaStorage';
-import { findDayByNumber } from '@/lib/tripDays';
-import type { MediaItem } from '@/lib/mediaStorage';
 
-function getDayTitle(dayNumber: number): string {
-  const day = findDayByNumber(dayNumber);
-  return day?.title ?? `Day ${dayNumber}`;
-}
-function getDayDate(dayNumber: number): string {
-  const day = findDayByNumber(dayNumber);
-  return day?.date ?? '';
+export interface SlideshowPhoto {
+  id: string;
+  dayNumber: number;
+  imageData: string;
+  dayTitle: string;
+  dayDate: string;
 }
 
 interface SlideshowProps {
   onClose: () => void;
+  /** Cloud + local images for slideshow (imageData / dataUrl) */
+  photos: SlideshowPhoto[];
 }
 
-export function Slideshow({ onClose }: SlideshowProps) {
-  const [photos, setPhotos] = useState<(MediaItem & { dayTitle: string; dayDate: string })[]>([]);
+export function Slideshow({ onClose, photos: photosProp }: SlideshowProps) {
+  const photos = photosProp;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [showPlayPauseIcon, setShowPlayPauseIcon] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    getAllMedia().then((all) => {
-      const imagesOnly = all.filter((m) => m.type === 'image');
-      setPhotos(
-        imagesOnly.map((m) => ({
-          ...m,
-          dayTitle: getDayTitle(m.dayNumber),
-          dayDate: getDayDate(m.dayNumber),
-        }))
-      );
-    });
-  }, []);
 
   const total = photos.length;
   const current = photos[currentIndex];
@@ -168,7 +153,7 @@ export function Slideshow({ onClose }: SlideshowProps) {
               className="max-w-full max-h-full flex items-center justify-center px-4"
             >
               <img
-                src={current.dataUrl}
+                src={current.imageData}
                 alt=""
                 className="max-w-full max-h-[85vh] w-auto h-auto object-contain will-change-opacity"
               />
@@ -179,7 +164,7 @@ export function Slideshow({ onClose }: SlideshowProps) {
 
       {/* Preload next 2 */}
       {photos.slice(currentIndex + 1, currentIndex + 3).map((p) => (
-        <img key={p.id} src={p.dataUrl} alt="" className="hidden" />
+        <img key={p.id} src={p.imageData} alt="" className="hidden" />
       ))}
 
       {/* Bottom overlay: day title + date */}
