@@ -24,16 +24,29 @@ function syncLater(
     syncUserIdeas: (items: UserIdeaItem[]) => Promise<void>;
     syncUserPhrases: (items: UserPhraseItem[]) => Promise<void>;
   }>,
-  run: (m: Awaited<ReturnType<typeof importSync>>) => Promise<unknown>
+  run: (m: Awaited<ReturnType<typeof importSync>>) => Promise<unknown>,
+  options?: { logErrors?: boolean }
 ) {
-  importSync().then(run).catch(() => {});
+  importSync()
+    .then(run)
+    .catch((e) => {
+      if (options?.logErrors) console.error('[Store] sync failed:', e);
+    });
 }
 
 const USER_NAME_KEY = 'userName';
 
-/** Skip applying remote bookingLinks for this long after a local setBookingLink (avoids listener overwriting a delete) */
-const BOOKING_LINKS_LOCAL_GRACE_MS = 4000;
-let lastBookingLinksLocalUpdate = 0;
+const BOOKING_LINKS_LOCAL_KEY = 'bookingLinksLocal';
+
+/** Once user has set/removed a link this session, never overwrite bookingLinks from Firestore (so delete sticks). */
+function shouldPreferLocalBookingLinks(): boolean {
+  if (typeof window === 'undefined') return false;
+  return sessionStorage.getItem(BOOKING_LINKS_LOCAL_KEY) === 'true';
+}
+
+function markBookingLinksTouched(): void {
+  if (typeof window !== 'undefined') sessionStorage.setItem(BOOKING_LINKS_LOCAL_KEY, 'true');
+}
 
 function numKeys<T>(r: Record<string, T>): Record<number, T> {
   const out: Record<number, T> = {};
@@ -161,7 +174,7 @@ export const useStore = create<AppState>()(
       setCurrentDayBookmark: (day) => set({ currentDayBookmark: day }),
       bookingLinks: {},
       setBookingLink: (reservationId, url) => {
-        lastBookingLinksLocalUpdate = Date.now();
+        markBookingLinksTouched();
         set((state) => {
           const next = url
             ? { ...state.bookingLinks, [reservationId]: url }
@@ -170,7 +183,7 @@ export const useStore = create<AppState>()(
                 delete n[reservationId];
                 return n;
               })();
-          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(next));
+          syncLater(() => import('@/lib/cloudSync'), (m) => m.syncBookingLinks(next), { logErrors: true });
           return { bookingLinks: next };
         });
       },
@@ -281,17 +294,18 @@ export const useStore = create<AppState>()(
       },
         applyRemoteData: (data: TripSyncData) => {
           try {
-            const now = Date.now();
-            const skipRemoteBookingLinks =
-              now - lastBookingLinksLocalUpdate < BOOKING_LINKS_LOCAL_GRACE_MS;
-            const currentState = useStore.getState();
+            const preferLocal = shouldPreferLocalBookingLinks();
+            if (!preferLocal && typeof window !== 'undefined')
+              sessionStorage.setItem(BOOKING_LINKS_LOCAL_KEY, 'true'); // so next snapshot we prefer local
+            const bookingLinks =
+              preferLocal
+                ? (useStore.getState().bookingLinks ?? {})
+                : (data?.bookingLinks ?? {});
             set({
               checklist: { ...defaultChecklist, ...numKeys(data?.checklist ?? {}) },
               toBookChecked: { ...defaultToBook, ...numKeys(data?.toBookChecked ?? {}) },
               packingChecked: { ...defaultPacking, ...numKeys(data?.packingChecked ?? {}) },
-              bookingLinks: skipRemoteBookingLinks
-                ? (currentState.bookingLinks ?? {})
-                : (data?.bookingLinks ?? {}),
+              bookingLinks,
               dayCaptions: numKeys(data?.dayCaptions ?? {}),
               userPacking: data?.userPacking ?? [],
               userFood: data?.userFood ?? [],

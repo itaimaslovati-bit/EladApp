@@ -33,7 +33,7 @@ function toDisplayItems(
     ...cloud.map((c) => ({
       type: 'image' as const,
       id: c.id,
-      thumbnail: c.thumbnail,
+      thumbnail: c.thumbnail || c.imageData,
       fullUrl: c.imageData,
       timestamp: c.timestamp,
       uploadedBy: c.uploadedBy,
@@ -59,6 +59,7 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [lightboxItem, setLightboxItem] = useState<DisplayMediaItem | null>(null);
+  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -151,15 +152,25 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
               className="absolute inset-0 w-full h-full"
             >
               {item.type === 'image' ? (
-                <img
-                  src={item.thumbnail || item.fullUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const el = e.currentTarget;
-                    if (el.src !== item.fullUrl) el.src = item.fullUrl;
-                  }}
-                />
+                failedImageIds.has(item.id) ? (
+                  <span className="w-full h-full flex items-center justify-center text-text-secondary text-xs bg-stone-200">Photo</span>
+                ) : (
+                  <img
+                    src={item.thumbnail || item.fullUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      if (el.src !== item.fullUrl) {
+                        el.src = item.fullUrl;
+                      } else {
+                        setFailedImageIds((prev) => new Set(prev).add(item.id));
+                      }
+                    }}
+                  />
+                )
+              ) : failedImageIds.has(item.id) ? (
+                <span className="w-full h-full flex items-center justify-center text-text-secondary text-xs bg-stone-200">Video</span>
               ) : (
                 <>
                   <img
@@ -168,7 +179,11 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const el = e.currentTarget;
-                      if (el.src !== item.fullUrl) el.src = item.fullUrl;
+                      if (el.src !== item.fullUrl) {
+                        el.src = item.fullUrl;
+                      } else {
+                        setFailedImageIds((prev) => new Set(prev).add(item.id));
+                      }
                     }}
                   />
                   <span className="absolute inset-0 flex items-center justify-center bg-black/20">
