@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Netlify auto-detects Next.js and uses the Essential Next.js plugin (OpenNext).
+# It sets the publish directory and runtime for you.
