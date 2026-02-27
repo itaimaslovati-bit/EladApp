@@ -94,7 +94,10 @@ export async function uploadPhoto(
 ): Promise<CloudMediaItem> {
   const rawDataUrl = await readFileAsDataUrl(file);
   const imageData = await compressForCloud(rawDataUrl);
-  const thumbnail = await createThumbnail(rawDataUrl);
+  // Use compressed JPEG for thumbnail if raw (e.g. HEIC on iOS) fails to decode in Image
+  const thumbnail = await createThumbnail(rawDataUrl).catch(() =>
+    createThumbnail(imageData)
+  );
   const docData = {
     dayNumber,
     type: 'image' as const,

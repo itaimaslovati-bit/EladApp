@@ -31,6 +31,10 @@ function syncLater(
 
 const USER_NAME_KEY = 'userName';
 
+/** Skip applying remote bookingLinks for this long after a local setBookingLink (avoids listener overwriting a delete) */
+const BOOKING_LINKS_LOCAL_GRACE_MS = 4000;
+let lastBookingLinksLocalUpdate = 0;
+
 function numKeys<T>(r: Record<string, T>): Record<number, T> {
   const out: Record<number, T> = {};
   Object.entries(r || {}).forEach(([k, v]) => {
@@ -157,6 +161,7 @@ export const useStore = create<AppState>()(
       setCurrentDayBookmark: (day) => set({ currentDayBookmark: day }),
       bookingLinks: {},
       setBookingLink: (reservationId, url) => {
+        lastBookingLinksLocalUpdate = Date.now();
         set((state) => {
           const next = url
             ? { ...state.bookingLinks, [reservationId]: url }
@@ -276,11 +281,17 @@ export const useStore = create<AppState>()(
       },
         applyRemoteData: (data: TripSyncData) => {
           try {
+            const now = Date.now();
+            const skipRemoteBookingLinks =
+              now - lastBookingLinksLocalUpdate < BOOKING_LINKS_LOCAL_GRACE_MS;
+            const currentState = useStore.getState();
             set({
               checklist: { ...defaultChecklist, ...numKeys(data?.checklist ?? {}) },
               toBookChecked: { ...defaultToBook, ...numKeys(data?.toBookChecked ?? {}) },
               packingChecked: { ...defaultPacking, ...numKeys(data?.packingChecked ?? {}) },
-              bookingLinks: data?.bookingLinks ?? {},
+              bookingLinks: skipRemoteBookingLinks
+                ? (currentState.bookingLinks ?? {})
+                : (data?.bookingLinks ?? {}),
               dayCaptions: numKeys(data?.dayCaptions ?? {}),
               userPacking: data?.userPacking ?? [],
               userFood: data?.userFood ?? [],

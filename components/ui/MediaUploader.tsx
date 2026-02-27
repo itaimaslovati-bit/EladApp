@@ -152,16 +152,24 @@ export function MediaUploader({ dayNumber, onMediaAdded }: MediaUploaderProps) {
             >
               {item.type === 'image' ? (
                 <img
-                  src={item.thumbnail}
+                  src={item.thumbnail || item.fullUrl}
                   alt=""
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    if (el.src !== item.fullUrl) el.src = item.fullUrl;
+                  }}
                 />
               ) : (
                 <>
                   <img
-                    src={item.thumbnail}
+                    src={item.thumbnail || item.fullUrl}
                     alt=""
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      if (el.src !== item.fullUrl) el.src = item.fullUrl;
+                    }}
                   />
                   <span className="absolute inset-0 flex items-center justify-center bg-black/20">
                     <Play size={32} className="text-white drop-shadow" fill="white" />
