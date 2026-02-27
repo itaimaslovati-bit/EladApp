@@ -15,4 +15,6 @@ const app =
   firebaseConfig.apiKey && firebaseConfig.projectId
     ? initializeApp(firebaseConfig)
     : null;
-export const db = app ? getFirestore(app) : (null as ReturnType<typeof getFirestore>);
+export const db: ReturnType<typeof getFirestore> | null = app
+  ? getFirestore(app)
+  : null;
