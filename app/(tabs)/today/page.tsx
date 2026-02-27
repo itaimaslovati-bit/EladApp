@@ -31,7 +31,7 @@ function PostTripContent() {
   return (
     <div className="px-4 pt-2 pb-4">
       <h1 className="text-[28px] font-bold text-text-primary">Today</h1>
-      <p className="text-text-secondary mt-1">Hope you had an incredible trip! 🌸</p>
+      <p className="text-text-secondary mt-1">Today's moments are tomorrow's memories.</p>
       <p className="text-sm text-text-secondary mt-4">
         {stats.photos} photos · {stats.videos} videos captured
       </p>

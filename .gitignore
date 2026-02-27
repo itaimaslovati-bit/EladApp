@@ -35,3 +35,9 @@ public/worker-*.js
 public/sw.js.map
 public/workbox-*.js.map
 public/worker-*.js.map
+
+# Local Netlify folder
+.netlify
+
+# Large source video (splash is in public/splash.mp4)
+Generated with Kive.ai*.mp4

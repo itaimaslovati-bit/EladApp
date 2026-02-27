@@ -15,19 +15,19 @@ git push -u origin main
 
 ## 2. Connect the repo to Netlify
 
-1. Go to [app.netlify.com](https://app.netlify.com) and sign in.
-2. Click **Add new site** → **Import an existing project**.
-3. Choose your Git provider and authorize Netlify.
-4. Select the **Japan Trip** repository.
-5. Netlify will detect Next.js and fill in:
-   - **Build command:** `npm run build` (or leave default)
-   - **Publish directory:** (leave as set by Netlify for Next.js)
-   - **Base directory:** (leave empty unless the app is in a subfolder)
-6. Click **Deploy site**.
+**Option A — New site (recommended so the deploy “shows” as EladApp)**  
+1. Go to [app.netlify.com](https://app.netlify.com) and sign in.  
+2. Click **Add new site** → **Import an existing project**.  
+3. Choose **GitHub** and authorize Netlify.  
+4. Select the **EladApp** repo (`itaimaslovati-bit/EladApp`).  
+5. Netlify will detect Next.js. Leave **Build command** as `npm run build`.  
+6. Click **Deploy site**. Your app will be at `https://<site-name>.netlify.app`.
+
+**Live site:** **konichiwaapp** — deploys from GitHub (Next.js). URL: **https://konichiwaapp.netlify.app**
 
 ## 3. After the first deploy
 
-- Your site will be at `https://random-name-123.netlify.app`.
+- This app is live at **https://konichiwaapp.netlify.app** (deploys from GitHub).
 - To use your own domain: **Domain settings** → **Add custom domain**.
 - To change the site name: **Site settings** → **Change site name**.
 

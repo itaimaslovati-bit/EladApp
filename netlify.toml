@@ -4,5 +4,6 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Netlify auto-detects Next.js and uses the Essential Next.js plugin (OpenNext).
-# It sets the publish directory and runtime for you.
+# Use Netlify's Next.js plugin so routes and SSR work correctly
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
